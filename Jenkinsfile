@@ -13,7 +13,14 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing Node.js dependencies'
+                echo 'Cleaning old dependencies'
+
+                sh 'rm -rf node_modules'
+
+                sh 'rm -f package-lock.json'
+
+                echo 'Installing fresh dependencies'
+
                 sh 'npm install'
             }
         }
