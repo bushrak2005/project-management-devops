@@ -36,6 +36,16 @@ pipeline {
                 sh 'docker build -t project-management:v1 .'
             }
         }
+        stage('Login to Amazon ECR') {
+            steps {
+                echo 'Logging in to Amazon ECR'
+
+                sh '''
+                aws ecr get-login-password --region eu-north-1 | \
+                docker login --username AWS --password-stdin 886682669004.dkr.ecr.eu-north-1.amazonaws.com
+                '''
+            }
+        }
 
     }
 }
