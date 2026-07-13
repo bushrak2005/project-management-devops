@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_ACCOUNT_ID = "886682669004"
+        AWS_REGION = "eu-north-1"
+        IMAGE_NAME = "project-management"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -33,7 +39,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image'
-                sh 'docker build -t project-management:v1 .'
+                sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
             }
         }
         stage('Login to Amazon ECR') {
@@ -51,8 +57,13 @@ pipeline {
                 echo 'Tagging Docker image'
 
                 sh '''
-                docker tag project-management:v1 \
-                886682669004.dkr.ecr.eu-north-1.amazonaws.com/project-management:v1
+                docker tag \
+                $IMAGE_NAME:$BUILD_NUMBER \
+                $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$BUILD_NUMBER
+
+                docker tag \
+                $IMAGE_NAME:$BUILD_NUMBER \
+                $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
                 '''
             }
         }
@@ -62,7 +73,10 @@ pipeline {
 
                 sh '''
                 docker push \
-                886682669004.dkr.ecr.eu-north-1.amazonaws.com/project-management:v1
+                $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$BUILD_NUMBER
+
+                docker push \
+                $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
                 '''
             }
         }
