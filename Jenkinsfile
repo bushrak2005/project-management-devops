@@ -2,10 +2,16 @@ pipeline {
     agent any
 
     stages {
-        stage('Hello') {
+
+        stage('Checkout') {
             steps {
-                echo 'Hello from Jenkins!'
+                echo 'Checkout stage started'
+
+                sh 'pwd'
+
+                sh 'ls -la'
             }
         }
+
     }
 }
