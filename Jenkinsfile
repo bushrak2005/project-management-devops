@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     options {
         disableConcurrentBuilds()
     }
@@ -8,6 +8,10 @@ pipeline {
         AWS_ACCOUNT_ID = "886682669004"
         AWS_REGION = "eu-north-1"
         IMAGE_NAME = "project-management"
+
+        ECR_REPOSITORY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
+
+        APP_SERVER_IP = "172.31.40.158"
     }
 
     stages {
@@ -80,6 +84,13 @@ pipeline {
 
                 docker push \
                 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
+                '''
+            }
+        }
+        stage('Deploy Application') {
+            steps {
+                sh '''
+                ssh -o StrictHostKeyChecking=no ubuntu@$APP_SERVER_IP "hostname && pwd && whoami"
                 '''
             }
         }
