@@ -89,9 +89,26 @@ pipeline {
         }
         stage('Deploy Application') {
             steps {
-                sh '''
-                ssh -o StrictHostKeyChecking=no ubuntu@$APP_SERVER_IP "hostname && pwd && whoami"
-                '''
+               echo 'Deploying application to App Server'
+
+                sh """
+                ssh -o StrictHostKeyChecking=no ubuntu@${APP_SERVER_IP} '
+                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
+                docker pull ${ECR_REPOSITORY}:latest
+
+                docker stop project-management-container || true
+
+                docker rm project-management-container || true
+
+                docker run -d \
+                --name project-management-container \
+                -p 80:80 \
+                ${ECR_REPOSITORY}:latest
+
+                docker ps
+                '
+                """
             }
         }
     }
