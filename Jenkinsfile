@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    
+    options {
+        disableConcurrentBuilds()
+    }
     environment {
         AWS_ACCOUNT_ID = "886682669004"
         AWS_REGION = "eu-north-1"
