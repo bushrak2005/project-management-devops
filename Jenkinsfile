@@ -46,6 +46,25 @@ pipeline {
                 '''
             }
         }
+        stage('Tag Docker Image') {
+            steps {
+                echo 'Tagging Docker image'
 
+                sh '''
+                docker tag project-management:v1 \
+                886682669004.dkr.ecr.eu-north-1.amazonaws.com/project-management:v1
+                '''
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                echo 'Pushing Docker image to Amazon ECR'
+
+                sh '''
+                docker push \
+                886682669004.dkr.ecr.eu-north-1.amazonaws.com/project-management:v1
+                '''
+            }
+        }
     }
 }
